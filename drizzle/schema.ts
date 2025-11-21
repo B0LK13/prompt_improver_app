@@ -25,4 +25,16 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// TODO: Add your tables here
+/**
+ * Prompts table stores original and improved prompts for each user.
+ */
+export const prompts = mysqlTable("prompts", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  originalPrompt: text("originalPrompt").notNull(),
+  improvedPrompt: text("improvedPrompt").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Prompt = typeof prompts.$inferSelect;
+export type InsertPrompt = typeof prompts.$inferInsert;
