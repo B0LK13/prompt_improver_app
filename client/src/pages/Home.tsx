@@ -2,13 +2,14 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { APP_LOGO, APP_TITLE, getLoginUrl } from "@/const";
+import { APP_TITLE, getLoginUrl } from "@/const";
 import { Streamdown } from 'streamdown';
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
-import { Copy, Sparkles, ArrowRight, History, Loader2 } from "lucide-react";
+import { Copy, ArrowRight, History, Loader2, Sparkles } from "lucide-react";
 import { Link } from "wouter";
+import { Label } from "@/components/ui/label";
 
 export default function Home() {
   const { user, loading, isAuthenticated } = useAuth();
@@ -18,16 +19,16 @@ export default function Home() {
   const improveMutation = trpc.prompt.improve.useMutation({
     onSuccess: (data) => {
       setImprovedPrompt(data.improvedPrompt);
-      toast.success("Prompt improved successfully!");
+      toast.success("Prompt optimized successfully");
     },
     onError: (error) => {
-      toast.error("Failed to improve prompt: " + error.message);
+      toast.error("Optimization failed: " + error.message);
     },
   });
 
   const handleImprove = () => {
     if (!originalPrompt.trim()) {
-      toast.error("Please enter a prompt to improve");
+      toast.error("Please enter a prompt");
       return;
     }
     improveMutation.mutate({ originalPrompt });
@@ -36,82 +37,62 @@ export default function Home() {
   const handleCopy = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      toast.success("Copied to clipboard!");
+      toast.success("Copied to clipboard");
     } catch (err) {
-      toast.error("Failed to copy");
+      toast.error("Copy failed");
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-white to-pink-50">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-foreground" />
       </div>
     );
   }
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50">
-        <div className="container py-12">
-          <div className="max-w-4xl mx-auto text-center space-y-8">
-            <div className="space-y-4">
-              <div className="flex justify-center mb-6">
-                <div className="p-4 bg-white rounded-2xl shadow-lg">
-                  <Sparkles className="h-12 w-12 text-primary" />
-                </div>
-              </div>
-              <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+      <div className="min-h-screen bg-background text-foreground">
+        <div className="container py-16">
+          <div className="max-w-3xl mx-auto space-y-12">
+            <div className="space-y-6 text-center">
+              <h1 className="text-5xl font-light tracking-tight">
                 {APP_TITLE}
               </h1>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Transform your basic prompts into highly detailed, optimized instructions that produce superior AI results. 
-                Perfect for text generation, image creation, code development, and more.
+              <p className="text-xl text-muted-foreground font-light">
+                Transform basic prompts into detailed, optimized instructions for AI applications
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6 mt-12">
-              <Card className="border-2 hover:border-primary transition-colors">
-                <CardHeader>
-                  <div className="h-12 w-12 rounded-lg bg-purple-100 flex items-center justify-center mb-4">
-                    <Sparkles className="h-6 w-6 text-purple-600" />
-                  </div>
-                  <CardTitle>AI-Powered Enhancement</CardTitle>
-                  <CardDescription>
-                    Advanced LLM technology analyzes and expands your prompts with context, structure, and clarity
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-
-              <Card className="border-2 hover:border-primary transition-colors">
-                <CardHeader>
-                  <div className="h-12 w-12 rounded-lg bg-pink-100 flex items-center justify-center mb-4">
-                    <ArrowRight className="h-6 w-6 text-pink-600" />
-                  </div>
-                  <CardTitle>Instant Results</CardTitle>
-                  <CardDescription>
-                    Get optimized prompts in seconds with detailed specifications, examples, and quality criteria
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-
-              <Card className="border-2 hover:border-primary transition-colors">
-                <CardHeader>
-                  <div className="h-12 w-12 rounded-lg bg-purple-100 flex items-center justify-center mb-4">
-                    <History className="h-6 w-6 text-purple-600" />
-                  </div>
-                  <CardTitle>History & Management</CardTitle>
-                  <CardDescription>
-                    Save and access all your improved prompts with full history tracking and easy retrieval
-                  </CardDescription>
-                </CardHeader>
-              </Card>
+            <div className="grid gap-8 md:grid-cols-3 text-center">
+              <div className="space-y-3">
+                <div className="text-3xl font-light">01</div>
+                <h3 className="font-medium">AI Enhancement</h3>
+                <p className="text-sm text-muted-foreground">
+                  Advanced language models analyze and expand your prompts with precision
+                </p>
+              </div>
+              <div className="space-y-3">
+                <div className="text-3xl font-light">02</div>
+                <h3 className="font-medium">Instant Results</h3>
+                <p className="text-sm text-muted-foreground">
+                  Receive optimized prompts in seconds with detailed specifications
+                </p>
+              </div>
+              <div className="space-y-3">
+                <div className="text-3xl font-light">03</div>
+                <h3 className="font-medium">Full History</h3>
+                <p className="text-sm text-muted-foreground">
+                  Access and manage all improved prompts with complete tracking
+                </p>
+              </div>
             </div>
 
-            <div className="pt-8">
-              <Button size="lg" asChild className="text-lg px-8 py-6">
+            <div className="text-center pt-8">
+              <Button size="lg" asChild variant="outline" className="px-8">
                 <a href={getLoginUrl()}>
-                  Get Started <ArrowRight className="ml-2 h-5 w-5" />
+                  Get Started <ArrowRight className="ml-2 h-4 w-4" />
                 </a>
               </Button>
             </div>
@@ -122,17 +103,14 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50">
-      <nav className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-10">
+    <div className="min-h-screen bg-background text-foreground">
+      <nav className="border-b border-border">
         <div className="container py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-6 w-6 text-primary" />
-              <span className="font-semibold text-lg">{APP_TITLE}</span>
-            </div>
-            <div className="flex items-center gap-4">
+            <h1 className="text-lg font-light tracking-wide">{APP_TITLE}</h1>
+            <div className="flex items-center gap-6">
               <Link href="/history">
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" className="font-light">
                   <History className="h-4 w-4 mr-2" />
                   History
                 </Button>
@@ -143,121 +121,127 @@ export default function Home() {
         </div>
       </nav>
 
-      <main className="container py-12">
-        <div className="max-w-6xl mx-auto space-y-8">
-          <div className="text-center space-y-3">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Improve Your Prompts
-            </h1>
-            <p className="text-muted-foreground text-lg">
-              Enter your basic prompt below and watch it transform into a detailed, optimized version
+      <main className="container py-16">
+        <div className="max-w-5xl mx-auto space-y-12">
+          <div className="space-y-3 text-center">
+            <h2 className="text-3xl font-light tracking-tight">Prompt Optimization</h2>
+            <p className="text-muted-foreground font-light">
+              Enter your prompt below for detailed enhancement
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            <Card className="border-2">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  Original Prompt
-                </CardTitle>
-                <CardDescription>
-                  Enter your basic prompt or idea
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <Textarea
-                  placeholder="Example: Create a website for a coffee shop"
-                  value={originalPrompt}
-                  onChange={(e) => setOriginalPrompt(e.target.value)}
-                  className="min-h-[200px] resize-none"
-                />
-                <Button 
-                  onClick={handleImprove} 
-                  disabled={improveMutation.isPending || !originalPrompt.trim()}
-                  className="w-full"
-                  size="lg"
-                >
-                  {improveMutation.isPending ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Improving...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="mr-2 h-4 w-4" />
-                      Improve Prompt
-                    </>
-                  )}
-                </Button>
-              </CardContent>
-            </Card>
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="space-y-6">
+              <Card className="bg-card border-border">
+                <CardHeader className="space-y-3">
+                  <CardTitle className="text-lg font-light">Input</CardTitle>
+                  <CardDescription className="font-light">
+                    Your original prompt
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="prompt-input" className="text-sm font-light">Prompt</Label>
+                    <Textarea
+                      id="prompt-input"
+                      placeholder="Enter your prompt..."
+                      value={originalPrompt}
+                      onChange={(e) => setOriginalPrompt(e.target.value)}
+                      className="min-h-[240px] resize-none bg-background border-border font-light"
+                    />
+                  </div>
+                  <Button 
+                    onClick={handleImprove} 
+                    disabled={improveMutation.isPending || !originalPrompt.trim()}
+                    className="w-full font-light"
+                    variant="outline"
+                  >
+                    {improveMutation.isPending ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="mr-2 h-4 w-4" />
+                        Optimize
+                      </>
+                    )}
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
 
-            <Card className="border-2 border-primary/20 bg-gradient-to-br from-purple-50/50 to-pink-50/50">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span className="flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 text-primary" />
-                    Improved Prompt
-                  </span>
-                  {improvedPrompt && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleCopy(improvedPrompt)}
-                    >
-                      <Copy className="h-4 w-4" />
-                    </Button>
-                  )}
-                </CardTitle>
-                <CardDescription>
-                  Your optimized, detailed prompt
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {improvedPrompt ? (
-                  <div className="prose prose-sm max-w-none bg-white rounded-lg p-4 min-h-[200px] max-h-[400px] overflow-y-auto">
-                    <Streamdown>{improvedPrompt}</Streamdown>
-                  </div>
-                ) : (
-                  <div className="min-h-[200px] flex items-center justify-center text-muted-foreground text-center p-8">
-                    <div className="space-y-2">
-                      <Sparkles className="h-12 w-12 mx-auto opacity-20" />
-                      <p>Your improved prompt will appear here</p>
+            <div className="space-y-6">
+              <Card className="bg-card border-border">
+                <CardHeader className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <CardTitle className="text-lg font-light">Output</CardTitle>
+                      <CardDescription className="font-light">
+                        Optimized result
+                      </CardDescription>
                     </div>
+                    {improvedPrompt && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleCopy(improvedPrompt)}
+                        className="font-light"
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    )}
                   </div>
-                )}
-              </CardContent>
-            </Card>
+                </CardHeader>
+                <CardContent>
+                  {improvedPrompt ? (
+                    <div className="prose prose-sm prose-invert max-w-none bg-background rounded-md p-4 min-h-[240px] max-h-[400px] overflow-y-auto border border-border">
+                      <Streamdown>{improvedPrompt}</Streamdown>
+                    </div>
+                  ) : (
+                    <div className="min-h-[240px] flex items-center justify-center text-muted-foreground border border-dashed border-border rounded-md">
+                      <div className="text-center space-y-2">
+                        <Sparkles className="h-8 w-8 mx-auto opacity-30" />
+                        <p className="text-sm font-light">Awaiting optimization</p>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
           </div>
 
-          <Card className="bg-gradient-to-r from-purple-50 to-pink-50 border-2">
+          <Card className="bg-card border-border">
             <CardHeader>
-              <CardTitle>💡 Tips for Better Results</CardTitle>
+              <CardTitle className="text-base font-light">Optimization Guidelines</CardTitle>
             </CardHeader>
-            <CardContent className="grid md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <h4 className="font-semibold">Be Specific</h4>
-                <p className="text-sm text-muted-foreground">
-                  Include key details about what you want to create or achieve
-                </p>
-              </div>
-              <div className="space-y-2">
-                <h4 className="font-semibold">Mention Your Goal</h4>
-                <p className="text-sm text-muted-foreground">
-                  Specify the type of output: text, image, code, or data analysis
-                </p>
-              </div>
-              <div className="space-y-2">
-                <h4 className="font-semibold">Add Context</h4>
-                <p className="text-sm text-muted-foreground">
-                  Provide background information or constraints if relevant
-                </p>
-              </div>
-              <div className="space-y-2">
-                <h4 className="font-semibold">Keep It Clear</h4>
-                <p className="text-sm text-muted-foreground">
-                  Use simple language - the AI will add the complexity
-                </p>
+            <CardContent>
+              <div className="grid md:grid-cols-4 gap-6 text-sm">
+                <div className="space-y-1">
+                  <h4 className="font-medium">Specificity</h4>
+                  <p className="text-muted-foreground font-light">
+                    Include key details and requirements
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <h4 className="font-medium">Context</h4>
+                  <p className="text-muted-foreground font-light">
+                    Provide relevant background information
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <h4 className="font-medium">Objective</h4>
+                  <p className="text-muted-foreground font-light">
+                    Specify the desired output type
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <h4 className="font-medium">Clarity</h4>
+                  <p className="text-muted-foreground font-light">
+                    Use clear, concise language
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>

@@ -5,7 +5,7 @@ import { APP_TITLE } from "@/const";
 import { Streamdown } from 'streamdown';
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
-import { Copy, Trash2, Sparkles, Home as HomeIcon, Loader2, ArrowLeft } from "lucide-react";
+import { Copy, Trash2, Home as HomeIcon, Loader2, ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
 import {
   Dialog,
@@ -26,49 +26,46 @@ export default function History() {
 
   const deleteMutation = trpc.prompt.delete.useMutation({
     onSuccess: () => {
-      toast.success("Prompt deleted successfully");
+      toast.success("Prompt deleted");
       refetch();
     },
     onError: (error) => {
-      toast.error("Failed to delete prompt: " + error.message);
+      toast.error("Delete failed: " + error.message);
     },
   });
 
   const handleCopy = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      toast.success("Copied to clipboard!");
+      toast.success("Copied to clipboard");
     } catch (err) {
-      toast.error("Failed to copy");
+      toast.error("Copy failed");
     }
   };
 
   const handleDelete = (id: number) => {
-    if (confirm("Are you sure you want to delete this prompt?")) {
+    if (confirm("Delete this prompt?")) {
       deleteMutation.mutate({ id });
     }
   };
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-white to-pink-50">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-foreground" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50">
-      <nav className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-10">
+    <div className="min-h-screen bg-background text-foreground">
+      <nav className="border-b border-border">
         <div className="container py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-6 w-6 text-primary" />
-              <span className="font-semibold text-lg">{APP_TITLE}</span>
-            </div>
-            <div className="flex items-center gap-4">
+            <h1 className="text-lg font-light tracking-wide">{APP_TITLE}</h1>
+            <div className="flex items-center gap-6">
               <Link href="/">
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" className="font-light">
                   <HomeIcon className="h-4 w-4 mr-2" />
                   Home
                 </Button>
@@ -79,44 +76,41 @@ export default function History() {
         </div>
       </nav>
 
-      <main className="container py-12">
-        <div className="max-w-6xl mx-auto space-y-8">
+      <main className="container py-16">
+        <div className="max-w-5xl mx-auto space-y-8">
           <div className="flex items-center gap-4">
             <Link href="/">
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="font-light">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back
               </Button>
             </Link>
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Prompt History
-              </h1>
-              <p className="text-muted-foreground mt-2">
-                View and manage all your improved prompts
+              <h2 className="text-3xl font-light tracking-tight">History</h2>
+              <p className="text-muted-foreground mt-1 font-light">
+                All optimized prompts
               </p>
             </div>
           </div>
 
           {isLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <div className="flex items-center justify-center py-16">
+              <Loader2 className="h-8 w-8 animate-spin text-foreground" />
             </div>
           ) : !prompts || prompts.length === 0 ? (
-            <Card className="border-2">
-              <CardContent className="py-12">
+            <Card className="bg-card border-border">
+              <CardContent className="py-16">
                 <div className="text-center space-y-4">
-                  <Sparkles className="h-16 w-16 mx-auto text-muted-foreground opacity-20" />
+                  <div className="text-4xl font-light text-muted-foreground">—</div>
                   <div className="space-y-2">
-                    <h3 className="text-xl font-semibold">No prompts yet</h3>
-                    <p className="text-muted-foreground">
-                      Start improving your prompts to see them here
+                    <h3 className="text-lg font-light">No prompts yet</h3>
+                    <p className="text-muted-foreground text-sm font-light">
+                      Start optimizing prompts to build your history
                     </p>
                   </div>
                   <Link href="/">
-                    <Button>
-                      <Sparkles className="mr-2 h-4 w-4" />
-                      Create Your First Prompt
+                    <Button variant="outline" className="font-light mt-4">
+                      Create Prompt
                     </Button>
                   </Link>
                 </div>
@@ -125,17 +119,17 @@ export default function History() {
           ) : (
             <div className="space-y-4">
               {prompts.map((prompt) => (
-                <Card key={prompt.id} className="border-2 hover:border-primary/50 transition-colors">
+                <Card key={prompt.id} className="bg-card border-border hover:border-foreground/20 transition-colors">
                   <CardHeader>
                     <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        <CardTitle className="text-lg line-clamp-2">
+                      <div className="flex-1 min-w-0 space-y-1">
+                        <CardTitle className="text-base font-light line-clamp-2">
                           {prompt.originalPrompt}
                         </CardTitle>
-                        <CardDescription>
+                        <CardDescription className="font-light">
                           {new Date(prompt.createdAt).toLocaleDateString("en-US", {
                             year: "numeric",
-                            month: "long",
+                            month: "short",
                             day: "numeric",
                             hour: "2-digit",
                             minute: "2-digit",
@@ -150,8 +144,9 @@ export default function History() {
                             original: prompt.originalPrompt,
                             improved: prompt.improvedPrompt,
                           })}
+                          className="font-light"
                         >
-                          View Details
+                          View
                         </Button>
                         <Button
                           variant="ghost"
@@ -166,14 +161,14 @@ export default function History() {
                           onClick={() => handleDelete(prompt.id)}
                           disabled={deleteMutation.isPending}
                         >
-                          <Trash2 className="h-4 w-4 text-destructive" />
+                          <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
                         </Button>
                       </div>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="bg-gradient-to-br from-purple-50/50 to-pink-50/50 rounded-lg p-4">
-                      <div className="prose prose-sm max-w-none line-clamp-3">
+                    <div className="bg-background rounded-md p-4 border border-border">
+                      <div className="prose prose-sm prose-invert max-w-none line-clamp-3">
                         <Streamdown>{prompt.improvedPrompt}</Streamdown>
                       </div>
                     </div>
@@ -186,18 +181,18 @@ export default function History() {
       </main>
 
       <Dialog open={!!selectedPrompt} onOpenChange={(open) => !open && setSelectedPrompt(null)}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-card border-border">
           <DialogHeader>
-            <DialogTitle>Prompt Details</DialogTitle>
-            <DialogDescription>
-              Compare the original and improved versions
+            <DialogTitle className="font-light">Prompt Details</DialogTitle>
+            <DialogDescription className="font-light">
+              Original and optimized versions
             </DialogDescription>
           </DialogHeader>
           {selectedPrompt && (
             <div className="space-y-6">
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h4 className="font-semibold">Original Prompt</h4>
+                  <h4 className="text-sm font-medium">Original</h4>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -206,16 +201,13 @@ export default function History() {
                     <Copy className="h-4 w-4" />
                   </Button>
                 </div>
-                <div className="bg-muted rounded-lg p-4">
-                  <p className="text-sm">{selectedPrompt.original}</p>
+                <div className="bg-background rounded-md p-4 border border-border">
+                  <p className="text-sm font-light">{selectedPrompt.original}</p>
                 </div>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h4 className="font-semibold flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-primary" />
-                    Improved Prompt
-                  </h4>
+                  <h4 className="text-sm font-medium">Optimized</h4>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -224,8 +216,8 @@ export default function History() {
                     <Copy className="h-4 w-4" />
                   </Button>
                 </div>
-                <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-4">
-                  <div className="prose prose-sm max-w-none">
+                <div className="bg-background rounded-md p-4 border border-border">
+                  <div className="prose prose-sm prose-invert max-w-none">
                     <Streamdown>{selectedPrompt.improved}</Streamdown>
                   </div>
                 </div>
