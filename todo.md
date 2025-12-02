@@ -34,3 +34,14 @@
 - [x] Simplify UI elements for corporate aesthetic
 - [x] Test dark theme across all pages
 - [x] Save checkpoint for dark theme version
+
+## Template & Configuration Features
+- [x] Create template types (image generation, code, marketing, data analysis, general)
+- [x] Add template selection to backend procedure
+- [x] Create advanced configuration options (tone, detail level, format)
+- [x] Update database schema to store template and config preferences
+- [x] Build template selector UI component
+- [x] Create advanced settings dialog/panel
+- [x] Update Home page with template and config options
+- [x] Test template-based prompt improvement
+- [x] Save checkpoint for template feature

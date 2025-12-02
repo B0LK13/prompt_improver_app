@@ -5,6 +5,7 @@ import { publicProcedure, router, protectedProcedure } from "./_core/trpc";
 import { invokeLLM } from "./_core/llm";
 import { createPrompt, getUserPrompts, getPromptById, deletePrompt } from "./db";
 import { z } from "zod";
+import { getSystemPrompt, type PromptConfig } from "./templates";
 
 export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -22,49 +23,22 @@ export const appRouter = router({
 
   prompt: router({
     improve: protectedProcedure
-      .input(z.object({ originalPrompt: z.string().min(1) }))
+      .input(z.object({ 
+        originalPrompt: z.string().min(1),
+        templateType: z.enum(["general", "image", "code", "marketing", "data"]).default("general"),
+        tone: z.enum(["professional", "casual", "technical", "creative"]).optional(),
+        detailLevel: z.enum(["concise", "balanced", "comprehensive"]).optional(),
+        outputFormat: z.enum(["structured", "narrative", "bullet_points"]).optional(),
+      }))
       .mutation(async ({ ctx, input }) => {
-        const systemPrompt = `You are an expert prompt engineer specializing in creating highly detailed, optimized prompts for various AI applications including:
-- Text generation (creative writing, technical documentation, business content)
-- Image generation (DALL-E, Midjourney, Stable Diffusion)
-- Code generation (full-stack applications, algorithms, scripts)
-- Data analysis and visualization
-
-Your task is to transform user's basic prompts into comprehensive, structured, and optimized versions that will produce superior results.
-
-When improving a prompt, you should:
-1. **Clarify the objective**: Make the goal crystal clear and specific
-2. **Add relevant context**: Include background information, constraints, and requirements
-3. **Specify format and structure**: Define expected output format, length, style
-4. **Include examples**: Provide concrete examples when helpful
-5. **Add quality criteria**: Specify what makes a good response
-6. **Consider edge cases**: Address potential ambiguities or special scenarios
-7. **Optimize for the target model**: Use techniques that work well with modern LLMs
-
-For image generation prompts, include:
-- Subject details (appearance, pose, expression)
-- Environment and setting
-- Lighting and atmosphere
-- Art style and medium
-- Technical parameters (composition, camera angle)
-- Quality modifiers
-
-For code generation prompts, include:
-- Technology stack and versions
-- Architecture patterns
-- Specific requirements and constraints
-- Error handling expectations
-- Testing requirements
-- Performance considerations
-
-For text generation prompts, include:
-- Target audience
-- Tone and style
-- Length and structure
-- Key points to cover
-- Format specifications
-
-Provide ONLY the improved prompt without any meta-commentary, explanations, or wrapper text.`;
+        const config: PromptConfig = {
+          templateType: input.templateType,
+          tone: input.tone,
+          detailLevel: input.detailLevel,
+          outputFormat: input.outputFormat,
+        };
+        
+        const systemPrompt = getSystemPrompt(config);
 
         const response = await invokeLLM({
           messages: [
@@ -84,6 +58,10 @@ Provide ONLY the improved prompt without any meta-commentary, explanations, or w
           userId: ctx.user.id,
           originalPrompt: input.originalPrompt,
           improvedPrompt: improvedPrompt,
+          templateType: input.templateType,
+          tone: input.tone,
+          detailLevel: input.detailLevel,
+          outputFormat: input.outputFormat,
         });
 
         return {

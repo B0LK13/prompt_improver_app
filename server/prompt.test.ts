@@ -67,6 +67,10 @@ describe("prompt.improve", () => {
       userId: 1,
       originalPrompt: "Create a website",
       improvedPrompt: expect.any(String),
+      templateType: "general",
+      tone: undefined,
+      detailLevel: undefined,
+      outputFormat: undefined,
     });
   });
 

@@ -15,6 +15,13 @@
       "when": 1763746332974,
       "tag": "0001_mute_wolfsbane",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1764645078500,
+      "tag": "0002_late_norrin_radd",
+      "breakpoints": true
     }
   ]
 }

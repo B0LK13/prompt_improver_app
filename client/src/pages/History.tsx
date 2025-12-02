@@ -126,14 +126,23 @@ export default function History() {
                         <CardTitle className="text-base font-light line-clamp-2">
                           {prompt.originalPrompt}
                         </CardTitle>
-                        <CardDescription className="font-light">
-                          {new Date(prompt.createdAt).toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
+                        <CardDescription className="font-light space-y-1">
+                          <div>
+                            {new Date(prompt.createdAt).toLocaleDateString("en-US", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </div>
+                          {prompt.templateType && (
+                            <div className="text-xs">
+                              Template: {prompt.templateType}
+                              {prompt.tone && ` • ${prompt.tone}`}
+                              {prompt.detailLevel && ` • ${prompt.detailLevel}`}
+                            </div>
+                          )}
                         </CardDescription>
                       </div>
                       <div className="flex items-center gap-2">

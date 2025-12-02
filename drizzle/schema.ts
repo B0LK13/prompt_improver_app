@@ -33,6 +33,10 @@ export const prompts = mysqlTable("prompts", {
   userId: int("userId").notNull(),
   originalPrompt: text("originalPrompt").notNull(),
   improvedPrompt: text("improvedPrompt").notNull(),
+  templateType: varchar("templateType", { length: 50 }),
+  tone: varchar("tone", { length: 50 }),
+  detailLevel: varchar("detailLevel", { length: 50 }),
+  outputFormat: varchar("outputFormat", { length: 50 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 

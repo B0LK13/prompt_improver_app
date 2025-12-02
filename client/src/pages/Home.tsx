@@ -7,14 +7,41 @@ import { Streamdown } from 'streamdown';
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
-import { Copy, ArrowRight, History, Loader2, Sparkles } from "lucide-react";
+import { Copy, ArrowRight, History, Loader2, Sparkles, Settings2 } from "lucide-react";
 import { Link } from "wouter";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+type TemplateType = "general" | "image" | "code" | "marketing" | "data";
+type Tone = "professional" | "casual" | "technical" | "creative";
+type DetailLevel = "concise" | "balanced" | "comprehensive";
+type OutputFormat = "structured" | "narrative" | "bullet_points";
+
+const TEMPLATES: Record<TemplateType, { label: string; description: string }> = {
+  general: { label: "General", description: "Versatile optimization for any prompt type" },
+  image: { label: "Image Generation", description: "DALL-E, Midjourney, Stable Diffusion" },
+  code: { label: "Code Generation", description: "Technical implementations and algorithms" },
+  marketing: { label: "Marketing", description: "Ads, copy, and business content" },
+  data: { label: "Data Analysis", description: "Research and visualization tasks" },
+};
 
 export default function Home() {
   const { user, loading, isAuthenticated } = useAuth();
   const [originalPrompt, setOriginalPrompt] = useState("");
   const [improvedPrompt, setImprovedPrompt] = useState("");
+  const [templateType, setTemplateType] = useState<TemplateType>("general");
+  const [tone, setTone] = useState<Tone | undefined>("professional");
+  const [detailLevel, setDetailLevel] = useState<DetailLevel | undefined>("balanced");
+  const [outputFormat, setOutputFormat] = useState<OutputFormat | undefined>("structured");
+  const [showAdvanced, setShowAdvanced] = useState(false);
   
   const improveMutation = trpc.prompt.improve.useMutation({
     onSuccess: (data) => {
@@ -31,7 +58,13 @@ export default function Home() {
       toast.error("Please enter a prompt");
       return;
     }
-    improveMutation.mutate({ originalPrompt });
+    improveMutation.mutate({ 
+      originalPrompt,
+      templateType,
+      tone,
+      detailLevel,
+      outputFormat,
+    });
   };
 
   const handleCopy = async (text: string) => {
@@ -126,7 +159,7 @@ export default function Home() {
           <div className="space-y-3 text-center">
             <h2 className="text-3xl font-light tracking-tight">Prompt Optimization</h2>
             <p className="text-muted-foreground font-light">
-              Enter your prompt below for detailed enhancement
+              Select a template and configure options for tailored enhancement
             </p>
           </div>
 
@@ -141,15 +174,96 @@ export default function Home() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
+                    <Label htmlFor="template-select" className="text-sm font-light">Template</Label>
+                    <Select value={templateType} onValueChange={(value) => setTemplateType(value as TemplateType)}>
+                      <SelectTrigger id="template-select" className="bg-background border-border font-light">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-card border-border">
+                        {Object.entries(TEMPLATES).map(([key, { label, description }]) => (
+                          <SelectItem key={key} value={key} className="font-light">
+                            <div className="flex flex-col items-start">
+                              <span>{label}</span>
+                              <span className="text-xs text-muted-foreground">{description}</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
                     <Label htmlFor="prompt-input" className="text-sm font-light">Prompt</Label>
                     <Textarea
                       id="prompt-input"
                       placeholder="Enter your prompt..."
                       value={originalPrompt}
                       onChange={(e) => setOriginalPrompt(e.target.value)}
-                      className="min-h-[240px] resize-none bg-background border-border font-light"
+                      className="min-h-[200px] resize-none bg-background border-border font-light"
                     />
                   </div>
+
+                  <Dialog open={showAdvanced} onOpenChange={setShowAdvanced}>
+                    <DialogTrigger asChild>
+                      <Button variant="ghost" size="sm" className="w-full font-light">
+                        <Settings2 className="h-4 w-4 mr-2" />
+                        Advanced Configuration
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="bg-card border-border">
+                      <DialogHeader>
+                        <DialogTitle className="font-light">Advanced Settings</DialogTitle>
+                        <DialogDescription className="font-light">
+                          Customize optimization behavior
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="tone-select" className="text-sm font-light">Tone</Label>
+                          <Select value={tone} onValueChange={(value) => setTone(value as Tone)}>
+                            <SelectTrigger id="tone-select" className="bg-background border-border font-light">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-card border-border">
+                              <SelectItem value="professional" className="font-light">Professional</SelectItem>
+                              <SelectItem value="casual" className="font-light">Casual</SelectItem>
+                              <SelectItem value="technical" className="font-light">Technical</SelectItem>
+                              <SelectItem value="creative" className="font-light">Creative</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="detail-select" className="text-sm font-light">Detail Level</Label>
+                          <Select value={detailLevel} onValueChange={(value) => setDetailLevel(value as DetailLevel)}>
+                            <SelectTrigger id="detail-select" className="bg-background border-border font-light">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-card border-border">
+                              <SelectItem value="concise" className="font-light">Concise</SelectItem>
+                              <SelectItem value="balanced" className="font-light">Balanced</SelectItem>
+                              <SelectItem value="comprehensive" className="font-light">Comprehensive</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="format-select" className="text-sm font-light">Output Format</Label>
+                          <Select value={outputFormat} onValueChange={(value) => setOutputFormat(value as OutputFormat)}>
+                            <SelectTrigger id="format-select" className="bg-background border-border font-light">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-card border-border">
+                              <SelectItem value="structured" className="font-light">Structured</SelectItem>
+                              <SelectItem value="narrative" className="font-light">Narrative</SelectItem>
+                              <SelectItem value="bullet_points" className="font-light">Bullet Points</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+
                   <Button 
                     onClick={handleImprove} 
                     disabled={improveMutation.isPending || !originalPrompt.trim()}
@@ -196,11 +310,11 @@ export default function Home() {
                 </CardHeader>
                 <CardContent>
                   {improvedPrompt ? (
-                    <div className="prose prose-sm prose-invert max-w-none bg-background rounded-md p-4 min-h-[240px] max-h-[400px] overflow-y-auto border border-border">
+                    <div className="prose prose-sm prose-invert max-w-none bg-background rounded-md p-4 min-h-[300px] max-h-[500px] overflow-y-auto border border-border">
                       <Streamdown>{improvedPrompt}</Streamdown>
                     </div>
                   ) : (
-                    <div className="min-h-[240px] flex items-center justify-center text-muted-foreground border border-dashed border-border rounded-md">
+                    <div className="min-h-[300px] flex items-center justify-center text-muted-foreground border border-dashed border-border rounded-md">
                       <div className="text-center space-y-2">
                         <Sparkles className="h-8 w-8 mx-auto opacity-30" />
                         <p className="text-sm font-light">Awaiting optimization</p>
@@ -211,40 +325,6 @@ export default function Home() {
               </Card>
             </div>
           </div>
-
-          <Card className="bg-card border-border">
-            <CardHeader>
-              <CardTitle className="text-base font-light">Optimization Guidelines</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid md:grid-cols-4 gap-6 text-sm">
-                <div className="space-y-1">
-                  <h4 className="font-medium">Specificity</h4>
-                  <p className="text-muted-foreground font-light">
-                    Include key details and requirements
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <h4 className="font-medium">Context</h4>
-                  <p className="text-muted-foreground font-light">
-                    Provide relevant background information
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <h4 className="font-medium">Objective</h4>
-                  <p className="text-muted-foreground font-light">
-                    Specify the desired output type
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <h4 className="font-medium">Clarity</h4>
-                  <p className="text-muted-foreground font-light">
-                    Use clear, concise language
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </main>
     </div>
