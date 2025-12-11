@@ -154,14 +154,35 @@ export default function Home() {
         </div>
       </nav>
 
-      <main className="container py-16">
-        <div className="max-w-5xl mx-auto space-y-12">
-          <div className="space-y-3 text-center">
-            <h2 className="text-3xl font-light tracking-tight">Prompt Optimization</h2>
-            <p className="text-muted-foreground font-light">
-              Select a template and configure options for tailored enhancement
+      {/* Modern Header */}
+      <header className="relative overflow-hidden border-b border-border/50">
+        {/* Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-pink-500/5" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-500/10 via-transparent to-transparent" />
+        
+        {/* Content */}
+        <div className="container mx-auto px-4 py-16 relative">
+          <div className="max-w-4xl mx-auto text-center space-y-4">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 mb-4">
+              <Sparkles className="h-4 w-4 text-blue-400" />
+              <span className="text-sm font-light text-blue-300">AI-Powered Enhancement</span>
+            </div>
+            <h1 className="text-5xl md:text-6xl font-light tracking-tight">
+              TBA's Prompt Optimization
+              <br />
+              <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                and improvement tool
+              </span>
+            </h1>
+            <p className="text-lg text-muted-foreground font-light max-w-2xl mx-auto">
+              Transform basic prompts into detailed, optimized instructions with specialized templates and advanced configuration options
             </p>
           </div>
+        </div>
+      </header>
+
+      <main className="container py-16">
+        <div className="max-w-5xl mx-auto space-y-12">
 
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-6">
