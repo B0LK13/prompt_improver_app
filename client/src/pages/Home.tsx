@@ -136,14 +136,22 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <nav className="border-b border-border">
+    <div className="min-h-screen bg-background text-foreground relative overflow-hidden">
+      {/* Animated Background */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-float" style={{animationDelay: '2s'}} />
+        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl animate-float" style={{animationDelay: '4s'}} />
+      </div>
+
+      {/* Navigation */}
+      <nav className="glass sticky top-0 z-50 border-b border-white/10">
         <div className="container py-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-lg font-light tracking-wide">{APP_TITLE}</h1>
+            <h1 className="text-lg font-medium tracking-wide">{APP_TITLE}</h1>
             <div className="flex items-center gap-6">
               <Link href="/history">
-                <Button variant="ghost" size="sm" className="font-light">
+                <Button variant="ghost" size="sm" className="font-light hover:bg-white/10">
                   <History className="h-4 w-4 mr-2" />
                   History
                 </Button>
@@ -154,27 +162,27 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* Modern Header */}
-      <header className="relative overflow-hidden border-b border-border/50">
-        {/* Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-pink-500/5" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-500/10 via-transparent to-transparent" />
+      {/* Elaborate Header */}
+      <header className="relative overflow-hidden border-b border-white/10">
+        {/* Animated Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10 animate-gradient" style={{backgroundSize: '200% 200%'}} />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-500/20 via-purple-500/10 to-transparent animate-pulse-slow" />
         
         {/* Content */}
-        <div className="container mx-auto px-4 py-16 relative">
-          <div className="max-w-4xl mx-auto text-center space-y-4">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 mb-4">
-              <Sparkles className="h-4 w-4 text-blue-400" />
-              <span className="text-sm font-light text-blue-300">AI-Powered Enhancement</span>
+        <div className="container mx-auto px-4 py-20 relative">
+          <div className="max-w-4xl mx-auto text-center space-y-6">
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full glass border border-white/20 mb-6 animate-glow">
+              <Sparkles className="h-5 w-5 text-blue-400 animate-pulse" />
+              <span className="text-sm font-medium bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">AI-Powered Enhancement</span>
             </div>
-            <h1 className="text-5xl md:text-6xl font-light tracking-tight">
+            <h1 className="text-6xl md:text-7xl font-bold tracking-tight">
               TBA's Prompt Optimization
               <br />
-              <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+              <span className="gradient-text animate-gradient" style={{backgroundSize: '200% 200%'}}>
                 and improvement tool
               </span>
             </h1>
-            <p className="text-lg text-muted-foreground font-light max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground font-light max-w-2xl mx-auto leading-relaxed">
               Transform basic prompts into detailed, optimized instructions with specialized templates and advanced configuration options
             </p>
           </div>
@@ -186,7 +194,7 @@ export default function Home() {
 
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-6">
-              <Card className="bg-card border-border">
+              <Card className="glass-strong border-white/20 rounded-2xl overflow-hidden hover:border-white/30 transition-all">
                 <CardHeader className="space-y-3">
                   <CardTitle className="text-lg font-light">Input</CardTitle>
                   <CardDescription className="font-light">
@@ -197,10 +205,10 @@ export default function Home() {
                   <div className="space-y-2">
                     <Label htmlFor="template-select" className="text-sm font-light">Template</Label>
                     <Select value={templateType} onValueChange={(value) => setTemplateType(value as TemplateType)}>
-                      <SelectTrigger id="template-select" className="bg-background border-border font-light">
+                      <SelectTrigger id="template-select" className="glass border-white/20 font-light hover:border-white/30">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-card border-border">
+                      <SelectContent className="glass-strong border-white/20">
                         {Object.entries(TEMPLATES).map(([key, { label, description }]) => (
                           <SelectItem key={key} value={key} className="font-light">
                             <div className="flex flex-col items-start">
@@ -220,7 +228,7 @@ export default function Home() {
                       placeholder="Enter your prompt..."
                       value={originalPrompt}
                       onChange={(e) => setOriginalPrompt(e.target.value)}
-                      className="min-h-[200px] resize-none bg-background border-border font-light"
+                      className="min-h-[200px] resize-none glass border-white/20 font-light focus:border-white/40"
                     />
                   </div>
 
@@ -231,7 +239,7 @@ export default function Home() {
                         Advanced Configuration
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="bg-card border-border">
+                    <DialogContent className="glass-strong border-white/20">
                       <DialogHeader>
                         <DialogTitle className="font-light">Advanced Settings</DialogTitle>
                         <DialogDescription className="font-light">
@@ -242,10 +250,10 @@ export default function Home() {
                         <div className="space-y-2">
                           <Label htmlFor="tone-select" className="text-sm font-light">Tone</Label>
                           <Select value={tone} onValueChange={(value) => setTone(value as Tone)}>
-                            <SelectTrigger id="tone-select" className="bg-background border-border font-light">
+                            <SelectTrigger id="tone-select" className="glass border-white/20 font-light hover:border-white/30">
                               <SelectValue />
                             </SelectTrigger>
-                            <SelectContent className="bg-card border-border">
+                            <SelectContent className="glass-strong border-white/20">
                               <SelectItem value="professional" className="font-light">Professional</SelectItem>
                               <SelectItem value="casual" className="font-light">Casual</SelectItem>
                               <SelectItem value="technical" className="font-light">Technical</SelectItem>
@@ -257,10 +265,10 @@ export default function Home() {
                         <div className="space-y-2">
                           <Label htmlFor="detail-select" className="text-sm font-light">Detail Level</Label>
                           <Select value={detailLevel} onValueChange={(value) => setDetailLevel(value as DetailLevel)}>
-                            <SelectTrigger id="detail-select" className="bg-background border-border font-light">
+                            <SelectTrigger id="detail-select" className="glass border-white/20 font-light hover:border-white/30">
                               <SelectValue />
                             </SelectTrigger>
-                            <SelectContent className="bg-card border-border">
+                            <SelectContent className="glass-strong border-white/20">
                               <SelectItem value="concise" className="font-light">Concise</SelectItem>
                               <SelectItem value="balanced" className="font-light">Balanced</SelectItem>
                               <SelectItem value="comprehensive" className="font-light">Comprehensive</SelectItem>
@@ -271,10 +279,10 @@ export default function Home() {
                         <div className="space-y-2">
                           <Label htmlFor="format-select" className="text-sm font-light">Output Format</Label>
                           <Select value={outputFormat} onValueChange={(value) => setOutputFormat(value as OutputFormat)}>
-                            <SelectTrigger id="format-select" className="bg-background border-border font-light">
+                            <SelectTrigger id="format-select" className="glass border-white/20 font-light hover:border-white/30">
                               <SelectValue />
                             </SelectTrigger>
-                            <SelectContent className="bg-card border-border">
+                            <SelectContent className="glass-strong border-white/20">
                               <SelectItem value="structured" className="font-light">Structured</SelectItem>
                               <SelectItem value="narrative" className="font-light">Narrative</SelectItem>
                               <SelectItem value="bullet_points" className="font-light">Bullet Points</SelectItem>
@@ -285,11 +293,11 @@ export default function Home() {
                     </DialogContent>
                   </Dialog>
 
-                  <Button 
-                    onClick={handleImprove} 
+                  <Button
+                    onClick={handleImprove}
                     disabled={improveMutation.isPending || !originalPrompt.trim()}
-                    className="w-full font-light"
                     variant="outline"
+                    className="w-full font-medium glass-strong border-white/20 hover:border-white/40 bg-gradient-to-r from-blue-500/20 to-purple-500/20 hover:from-blue-500/30 hover:to-purple-500/30"
                   >
                     {improveMutation.isPending ? (
                       <>
@@ -308,7 +316,7 @@ export default function Home() {
             </div>
 
             <div className="space-y-6">
-              <Card className="bg-card border-border">
+              <Card className="glass-strong border-white/20 rounded-2xl overflow-hidden hover:border-white/30 transition-all">
                 <CardHeader className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="space-y-1">
@@ -318,12 +326,12 @@ export default function Home() {
                       </CardDescription>
                     </div>
                     {improvedPrompt && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleCopy(improvedPrompt)}
-                        className="font-light"
-                      >
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleCopy(improvedPrompt)}
+                    className="font-light glass border-white/20 hover:border-white/40 hover:bg-white/10"
+                  >
                         <Copy className="h-4 w-4" />
                       </Button>
                     )}
